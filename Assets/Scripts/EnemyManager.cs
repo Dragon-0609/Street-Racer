@@ -10,6 +10,7 @@ public class EnemyManager
     private Vector3[] enemySpawnPos = new Vector3[4]; //array of possible spawn position
     private GameObject enemyHolder; //parent object for all enemy objects
     private float moveSpeed; //moving speed
+    public int currentCars = 0;
 
     public EnemyManager(Vector3 spawnPos, float moveSpeed) //constructor of script
     {
@@ -55,6 +56,7 @@ public class EnemyManager
             if (deactiveEnemyList.Count > 0) //check if the deactiveEnemyList have elements
             {
                 Spawn();
+                currentCars++;
             }
         }
     }
@@ -63,6 +65,7 @@ public class EnemyManager
     {
         int index = Random.Range(0, deactiveEnemyList.Count - 1);
         if (index >= deactiveEnemyList.Count) index = Random.Range(0, deactiveEnemyList.Count - 1);
+        if (index >= deactiveEnemyList.Count) index = 0;
         if (index < deactiveEnemyList.Count)
         {
             GameObject enemy = deactiveEnemyList[index];
@@ -92,5 +95,6 @@ public class EnemyManager
     {
         enemy.SetActive(false); //deactivate the enemy
         deactiveEnemyList.Add(enemy); //add to deactiveEnemyList
+        currentCars--;
     }
 }

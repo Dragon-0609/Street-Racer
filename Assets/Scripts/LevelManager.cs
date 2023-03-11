@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// This script controls the game, from spawning enemy, road, player to setting game status
@@ -88,6 +90,7 @@ public class LevelManager : MonoBehaviour
         _enemyManager = new EnemyManager(enemySpawnPos, enemyMoveSpeed); //create EnemyManager
         _enemyManager.SpawnEnemies(trafficCarPrefabs); //spawn enemies
         SpawnPlayer();
+        UIManager.instance.recordText.text = $"Max: {PlayerPrefs.GetInt("record", 0)}m";
     }
 
     private int CheckDuplicity(int index)
@@ -200,9 +203,15 @@ public class LevelManager : MonoBehaviour
 
         if (GameManager.singeton.gameStatus == GameStatus.PLAYING) //check if gamestatus is not PLAYING
         {
-            _distanceTravelled += moveSpeed * Time.deltaTime; //update the distanceTravelled
+            int mult = 1;
+            if (_playerController.transform.position.x < 0) mult = 2;
+            _distanceTravelled += mult * moveSpeed * Time.deltaTime; //update the distanceTravelled
             //update DistanceText
             UIManager.instance.DistanceText.text = string.Format("{0:0}", _distanceTravelled);
+            if (_enemyManager.currentCars <= 0)
+            {
+                _enemyManager.ActivateEnemy();
+            }
         }
     }
 
@@ -221,6 +230,11 @@ public class LevelManager : MonoBehaviour
         //do camera shake adn after 1sec call UIManager GameOver method
         // cameraToAttach.position = oldCameraPosition;
         InputManager.instance.acceleration -= Acceleration;
+        if (PlayerPrefs.GetInt("record", 0) < _distanceTravelled)
+        {
+            PlayerPrefs.SetInt("record", Convert.ToInt32(_distanceTravelled));
+        }
+
         Camera.main.transform.DOShakePosition(1f, Random.insideUnitCircle.normalized, 5, 10f, false, true)
             .OnComplete
             (

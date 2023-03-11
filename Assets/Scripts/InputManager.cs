@@ -36,8 +36,9 @@ public class InputManager : MonoBehaviour
     private void Start()
     {
         bool mobile = false;
-
-#if UNITY_ANDROID
+#if UNITY_EDITOR || UNITY_STANDALONE
+        mobile = false;
+#elif UNITY_ANDROID
         mobile = true;
 #endif
 
@@ -49,7 +50,7 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-#if UNITY_ANDROID
+#if UNITY_EDITOR || UNITY_STANDALONE
         /*if (Input.GetMouseButtonDown(0))                    //on mouse down
         {
             startPos = endPos = Input.mousePosition;        //set the startPos and endPos
@@ -65,23 +66,6 @@ public class InputManager : MonoBehaviour
                 DetectSwipe();                              //if less tha limit then call method
             }
         }*/
-        if (acceleration != null)
-        {
-            AccelerationType accelerationType = AccelerationType.None;
-            if (isToUp)
-                accelerationType = AccelerationType.Accelerate;
-            else if (isToDown)
-                accelerationType = AccelerationType.Decelerate;
-            else
-                accelerationType = AccelerationType.None;
-            acceleration(accelerationType);
-        }
-
-        if (Input.GetKey("escape"))
-        {
-            Application.Quit();
-        }
-#elif UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetKeyUp(KeyCode.A))
         {
             swipeCallback(SwipeType.LEFT);
@@ -109,6 +93,23 @@ public class InputManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             GameManager.singeton.GetComponent<CameraController>().ChangeCam();
+        }
+#elif UNITY_ANDROID
+        if (acceleration != null)
+        {
+            AccelerationType accelerationType = AccelerationType.None;
+            if (isToUp)
+                accelerationType = AccelerationType.Accelerate;
+            else if (isToDown)
+                accelerationType = AccelerationType.Decelerate;
+            else
+                accelerationType = AccelerationType.None;
+            acceleration(accelerationType);
+        }
+
+        if (Input.GetKey("escape"))
+        {
+            Application.Quit();
         }
 #endif
     }

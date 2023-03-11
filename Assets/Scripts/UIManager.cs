@@ -13,6 +13,9 @@ public class UIManager : MonoBehaviour
     //references to important panels and holders
     [SerializeField] private GameObject mainMenu, gameMenu, gameOverMenu, selectPanel, selectHolder, carHolder;
     [SerializeField] private Text distanceText; //ref to the text which shows the distance info
+    [SerializeField] private GameObject platform;
+
+    public Text recordText;
 
     public Text DistanceText
     {
@@ -126,6 +129,8 @@ public class UIManager : MonoBehaviour
             GameObject car = Instantiate(LevelManager.Instance.VehiclePrefabs[i], carHolder.transform);
             car.transform.Rotate(new Vector3(0, 1, 0), 230); //set its rotation
             car.transform.localPosition = Vector3.right * i * 8; //set its position
+            GameObject platf = Instantiate(platform, carHolder.transform);
+            platf.transform.localPosition = new Vector3(i * 8, -0.5f, 0);
         }
     }
 
