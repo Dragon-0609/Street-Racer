@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Script which controls the player
@@ -13,10 +14,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 maxPosition;
 
     private Tween _tween;
+    [SerializeField] private int _turnSpeed = 10;
 
     private void OnDisable()
     {
-        InputManager.instance.swipeCallback -= ActionOnSwipe; //unsubscribe to the event
+        InputManager.instance.horizontalMove -= ActionOnHorizontalMove; //unsubscribe to the event
     }
 
     private void Start()
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     public void GameStarted()
     {
-        InputManager.instance.swipeCallback += ActionOnSwipe; //subscribe to the event
+        InputManager.instance.horizontalMove += ActionOnHorizontalMove; //subscribe to the event
     }
 
     public void SpawnVehicle(int index) //method alled to spawn the selected car
@@ -47,7 +49,7 @@ public class PlayerController : MonoBehaviour
         CarInfo carInfo = child.GetComponent<CarInfo>();
         LevelManager.Instance.speed = carInfo.speed;
         LevelManager.Instance.breakSpeed = carInfo.breakSpeed;
-        LevelManager.Instance.breakDecelSpeed = carInfo.breakSpeed / 4;
+        LevelManager.Instance.breakDecelSpeed = carInfo.breakSpeed / 32;
         carInfo.cameraPosition.x += LevelManager.Instance.playerInitialPosition.x;
         LevelManager.Instance.cameraToAttach[LevelManager.Instance.fpsCameraIndex].position = carInfo.cameraPosition;
         LevelManager.Instance.cameraToAttach[LevelManager.Instance.fpsCameraIndex].rotation =
@@ -57,17 +59,19 @@ public class PlayerController : MonoBehaviour
         colliderComponent.isTrigger = true; //set isTrigger to true
     }
 
-    void ActionOnSwipe(SwipeType swipeType) //method alled on swipe action of InputManager
+    void ActionOnHorizontalMove(SwipeType swipeType) //method alled on swipe action of InputManager
     {
         if (GameManager.singeton.gameStatus == GameStatus.PLAYING) //is gamestatus is playing
         {
+            float turnSpeed = _turnSpeed + LevelManager.Instance.moveSpeed / 3f;
+
             switch (swipeType)
             {
                 case SwipeType.LEFT: //if we left swipe
-                    endXPos = transform.position.x - 3; //change endXPos by 3 to left
+                    endXPos = transform.position.x - turnSpeed * Time.deltaTime; //change endXPos by 3 to left
                     break;
                 case SwipeType.RIGHT: //if we right swipe
-                    endXPos = transform.position.x + 3; //change endXPos by 3 to right
+                    endXPos = transform.position.x + turnSpeed * Time.deltaTime; //change endXPos by 3 to right
                     break;
             }
 
@@ -82,18 +86,23 @@ public class PlayerController : MonoBehaviour
         {
             if (GameManager.singeton.gameStatus == GameStatus.PLAYING) //check if gameStatus is PLAYING
             {
-                if (_tween != null)
-                {
-                    _tween.Kill();
-                }
-
                 LevelManager.Instance.GameOver(); //call GameOver
                 colliderComponent.isTrigger = false; //set isTrigger to false
-                myBody.isKinematic = false; //set isKinematic to false
-                myBody.useGravity = true; //set useGravity ture
-                //add a random force
-                gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitCircle.normalized * 100f);
+                StopController();
             }
         }
+    }
+
+    public void StopController()
+    {
+        if (_tween != null)
+        {
+            _tween.Kill();
+        }
+
+        myBody.isKinematic = false; //set isKinematic to false
+        myBody.useGravity = true; //set useGravity ture
+        //add a random force
+        gameObject.GetComponent<Rigidbody>().AddForce(Random.insideUnitCircle.normalized * 100f);
     }
 }

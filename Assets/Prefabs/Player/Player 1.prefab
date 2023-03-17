@@ -60,9 +60,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 4
-  breakSpeed: 24
-  cameraPosition: {x: 0, y: 1.256076, z: 0.877}
-  cameraRotation: {x: 10.086173, y: 0, z: 0}
+  breakSpeed: 32
+  cameraPosition: {x: 0, y: 1.017, z: 0.895}
+  cameraRotation: {x: 6.7913065, y: 0, z: 0}
 --- !u!1001 &5770081803278073200
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,9 +12,13 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
 
     //references to important panels and holders
-    [SerializeField] private GameObject mainMenu, gameMenu, gameOverMenu, selectPanel, selectHolder, carHolder;
+    [SerializeField]
+    private GameObject mainMenu, gameMenu, gameOverMenu, selectPanel, selectHolder, carHolder, pausePanel;
+
     [SerializeField] private Text distanceText; //ref to the text which shows the distance info
     [SerializeField] private GameObject platform;
+
+    public Action<bool> OnPause;
 
     public Text recordText;
 
@@ -27,7 +32,7 @@ public class UIManager : MonoBehaviour
 
     private void OnDisable()
     {
-        InputManager.instance.swipeCallback -= ActionOnSwipe; //removing event subscrition
+        InputManager.instance.horizontalMove -= ActionOnHorizontalMove; //removing event subscrition
     }
 
     private void Awake()
@@ -41,7 +46,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         GameManager.singeton.gameStatus = GameStatus.NONE; //set the game status to None
-        InputManager.instance.swipeCallback += ActionOnSwipe; //add event subscription
+        InputManager.instance.horizontalMove += ActionOnHorizontalMove; //add event subscription
         currentSelectedCarIndex = GameManager.singeton.currentCarIndex; //set the selected car index
         defaultCarHolderPos = carHolder.transform.position; //set the default car holder position
         carHolder.transform.position -=
@@ -80,7 +85,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    void ActionOnSwipe(SwipeType swipeType) //method called on swipe action by InputManager
+    void ActionOnHorizontalMove(SwipeType swipeType) //method called on swipe action by InputManager
     {
         switch (swipeType)
         {
@@ -137,5 +142,30 @@ public class UIManager : MonoBehaviour
     public void GameOver()
     {
         gameOverMenu.SetActive(true);
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = 0;
+        pausePanel.SetActive(true);
+        if (OnPause != null)
+            OnPause(true);
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1;
+        pausePanel.SetActive(false);
+        if (OnPause != null)
+            OnPause(false);
+    }
+
+    public void Exit()
+    {
+        Time.timeScale = 1;
+        GameManager.singeton.gameStatus = GameStatus.FAILED;
+        LevelManager.Instance.RemoveAcceleration();
+        LevelManager.Instance.PlayerController.StopController();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

@@ -17,13 +17,16 @@ public class InputManager : MonoBehaviour
     private float swipeTimeLimit = 0.25f; //TimeLimit to conform swipe
     private float startTime, endTime; //times to get difference
 
-    public Action<SwipeType> swipeCallback; //SwipeType event trigger
+    public Action<SwipeType> horizontalMove; //SwipeType event trigger
     public Action<AccelerationType> acceleration;
 
     public GameObject[] mobileControls;
 
     public bool isToUp;
     public bool isToDown;
+
+    public bool isToLeft;
+    public bool isToRight;
 
     private void Awake()
     {
@@ -66,13 +69,13 @@ public class InputManager : MonoBehaviour
                 DetectSwipe();                              //if less tha limit then call method
             }
         }*/
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
         {
-            swipeCallback(SwipeType.LEFT);
+            horizontalMove(SwipeType.LEFT);
         }
-        else if (Input.GetKeyUp(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D))
         {
-            swipeCallback(SwipeType.RIGHT);
+            horizontalMove(SwipeType.RIGHT);
         }
 
         if (acceleration != null)
@@ -107,6 +110,11 @@ public class InputManager : MonoBehaviour
             acceleration(accelerationType);
         }
 
+        if (isToLeft || isToRight)
+        {
+            horizontalMove(isToLeft ? SwipeType.LEFT : SwipeType.RIGHT);
+        }
+
         if (Input.GetKey("escape"))
         {
             Application.Quit();
@@ -127,7 +135,7 @@ public class InputManager : MonoBehaviour
 
     public void Swipe(SwipeType type)
     {
-        swipeCallback(type);
+        horizontalMove(type);
     }
 
     public void Accelerate(AccelerationType type)
@@ -151,6 +159,6 @@ public class InputManager : MonoBehaviour
             }
         }
 
-        swipeCallback(swipe); //call the event
+        horizontalMove(swipe); //call the event
     }
 }

@@ -90,7 +90,7 @@ public class LevelManager : MonoBehaviour
         _enemyManager = new EnemyManager(enemySpawnPos, enemyMoveSpeed); //create EnemyManager
         _enemyManager.SpawnEnemies(trafficCarPrefabs); //spawn enemies
         SpawnPlayer();
-        UIManager.instance.recordText.text = $"Max: {PlayerPrefs.GetInt("record", 0)}m";
+        UIManager.instance.recordText.text = $"Record: {PlayerPrefs.GetInt("record", 0)}m";
     }
 
     private int CheckDuplicity(int index)
@@ -207,7 +207,7 @@ public class LevelManager : MonoBehaviour
             if (_playerController.transform.position.x < 0) mult = 2;
             _distanceTravelled += mult * moveSpeed * Time.deltaTime; //update the distanceTravelled
             //update DistanceText
-            UIManager.instance.DistanceText.text = string.Format("{0:0}", _distanceTravelled);
+            UIManager.instance.DistanceText.text = $"{_distanceTravelled:0}";
             if (_enemyManager.currentCars <= 0)
             {
                 _enemyManager.ActivateEnemy();
@@ -229,7 +229,7 @@ public class LevelManager : MonoBehaviour
         GameManager.singeton.gameStatus = GameStatus.FAILED; //set gameStatus to FAILED
         //do camera shake adn after 1sec call UIManager GameOver method
         // cameraToAttach.position = oldCameraPosition;
-        InputManager.instance.acceleration -= Acceleration;
+        RemoveAcceleration();
         if (PlayerPrefs.GetInt("record", 0) < _distanceTravelled)
         {
             PlayerPrefs.SetInt("record", Convert.ToInt32(_distanceTravelled));
@@ -240,5 +240,10 @@ public class LevelManager : MonoBehaviour
             (
                 () => UIManager.instance.GameOver()
             );
+    }
+
+    public void RemoveAcceleration()
+    {
+        InputManager.instance.acceleration -= Acceleration;
     }
 }

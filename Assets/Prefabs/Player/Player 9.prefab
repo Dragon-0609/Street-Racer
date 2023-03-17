@@ -1436,7 +1436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 4
-  breakSpeed: 24
+  breakSpeed: 32
   cameraPosition: {x: 0, y: 1.624, z: 0.76}
   cameraRotation: {x: 17.114, y: 0, z: 0}
 --- !u!1 &9153984726474837349

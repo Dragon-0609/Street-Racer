@@ -12,6 +12,8 @@ public class EnemyManager
     private float moveSpeed; //moving speed
     public int currentCars = 0;
 
+    private List<Vector3> availableRoads = new();
+
     public EnemyManager(Vector3 spawnPos, float moveSpeed) //constructor of script
     {
         this.moveSpeed = moveSpeed; //set the speed
@@ -35,7 +37,7 @@ public class EnemyManager
             enemy.transform.SetParent(enemyHolder.transform); //set its parent
             enemy.name = "Enemy"; //set the name
             enemy.AddComponent<EnemyController>(); //attach EnemyController componenet to it
-            float speed = Random.Range(0, moveSpeed);
+            float speed = Random.Range(1, moveSpeed);
             enemy.GetComponent<EnemyController>().SetDefault(speed, this);
             deactiveEnemyList.Add(enemy); //add to deactiveEnemyList
         }
@@ -43,9 +45,11 @@ public class EnemyManager
 
     public void ActivateEnemy() //method to activate the enemy
     {
+        availableRoads.Clear();
+        availableRoads.AddRange(enemySpawnPos);
         if (deactiveEnemyList.Count >= 4)
             SpawnCountEnemy(Random.Range(1, 3));
-        else
+        else if (availableRoads.Count > 1)
             Spawn();
     }
 
@@ -53,7 +57,7 @@ public class EnemyManager
     {
         for (int i = 0; i < count; i++)
         {
-            if (deactiveEnemyList.Count > 0) //check if the deactiveEnemyList have elements
+            if (deactiveEnemyList.Count > 0 && availableRoads.Count > 1) //check if the deactiveEnemyList have elements
             {
                 Spawn();
                 currentCars++;
@@ -63,8 +67,8 @@ public class EnemyManager
 
     private void Spawn()
     {
-        int index = Random.Range(0, deactiveEnemyList.Count - 1);
-        if (index >= deactiveEnemyList.Count) index = Random.Range(0, deactiveEnemyList.Count - 1);
+        int index = Random.Range(0, deactiveEnemyList.Count);
+        if (index >= deactiveEnemyList.Count) index = Random.Range(0, deactiveEnemyList.Count);
         if (index >= deactiveEnemyList.Count) index = 0;
         if (index < deactiveEnemyList.Count)
         {
@@ -76,10 +80,12 @@ public class EnemyManager
     private void SpawnEnemy(GameObject enemy)
     {
         deactiveEnemyList.Remove(enemy); //remove the element from the list
-        enemy.transform.position = enemySpawnPos[Random.Range(0, enemySpawnPos.Length)]; //set spawn position
+        Vector3 position = availableRoads[Random.Range(0, availableRoads.Count)];
+        enemy.transform.position = position; //set spawn position
+        availableRoads.Remove(position);
         enemy.SetActive(true); //activate the enemy
         EnemyController controller = enemy.GetComponent<EnemyController>();
-        if (enemy.transform.position.x > 0)
+        if (enemy.transform.position.x >= 0)
         {
             controller.moveSpeed = controller.initialMoveSpeed;
             enemy.transform.rotation = Quaternion.Euler(0, 0, 0);

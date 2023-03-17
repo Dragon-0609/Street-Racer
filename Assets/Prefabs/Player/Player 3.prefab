@@ -226,10 +226,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7019b02b0b454b68a2b70a716df7ffa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  breakSpeed: 24
-  cameraPosition: {x: 0, y: 1.245, z: 1.226}
-  cameraRotation: {x: 11.127, y: 0, z: 0}
+  speed: 7
+  breakSpeed: 56
+  cameraPosition: {x: 0, y: 0.863, z: 1.275}
+  cameraRotation: {x: 7.8453755, y: 0, z: 0}
 --- !u!1 &2225985359829480028
 GameObject:
   m_ObjectHideFlags: 0
